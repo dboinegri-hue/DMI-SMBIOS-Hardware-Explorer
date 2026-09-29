@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    # privileged gives the container read access to /sys/firmware/dmi/tables/
+    # on Linux hosts where those files exist.
+    # On Windows / macOS Docker Desktop the SMBIOS path is not exposed,
+    # so the page will show an error card with troubleshooting steps.
+    privileged: true
+    restart: unless-stopped

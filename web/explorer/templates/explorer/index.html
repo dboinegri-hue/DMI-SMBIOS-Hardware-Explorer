@@ -1,0 +1,98 @@
+{% extends 'explorer/base.html' %}
+
+{% block nav_home %}active{% endblock %}
+
+{% block navbar_badges %}
+  {% if not error %}
+    {% if source == 'wmi' %}
+      <span class="badge-source badge-wmi"><i class="bi bi-windows me-1"></i>Windows WMI</span>
+    {% else %}
+      <span class="badge-source badge-smbios"><i class="bi bi-lightning-charge-fill me-1"></i>SMBIOS Direct</span>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  <!-- SIDEBAR -->
+  <div class="col-md-3 col-xl-2">
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-heading">Sections</div>
+        <nav class="nav flex-column nav-pills" id="sectionNav">
+          {% if error %}
+            <span class="nav-link disabled">
+              <span class="status-dot dot-err"></span>Not available
+            </span>
+          {% else %}
+            {% for sec in sections %}
+            <a class="nav-link {% if forloop.first %}active{% endif %}"
+               href="#section-{{ forloop.counter }}">
+              <i class="bi {{ sec.icon }}"></i>{{ sec.short }}
+            </a>
+            {% endfor %}
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="col-md-9 col-xl-10">
+
+    {% if error %}
+    <div class="error-card">
+      <h4><i class="bi bi-exclamation-triangle-fill me-2"></i>Could not read SMBIOS table</h4>
+      <div class="error-pre mt-3">{{ error }}</div>
+      <p class="fix-heading">How to fix</p>
+      <div class="fix-step">
+        <strong>Option 1 — run the server with sudo:</strong><br>
+        <code>sudo python3 manage.py runserver</code>
+      </div>
+      <div class="fix-step">
+        <strong>Option 2 — make the DMI file world-readable (resets on reboot):</strong><br>
+        <code>sudo chmod a+r /sys/firmware/dmi/tables/DMI /sys/firmware/dmi/tables/smbios_entry_point</code>
+      </div>
+      <div class="fix-step">
+        <strong>Option 3 — WSL2 note:</strong><br>
+        Some WSL2 kernels hide <code>/sys/firmware/dmi/tables/</code> entirely.
+        Run on bare-metal Linux or a VM with DMI passthrough for real data.
+      </div>
+      <p class="error-path">Binary: <code>{{ binary_path }}</code></p>
+    </div>
+
+    {% else %}
+    {% for sec in sections %}
+    <div class="section-card" id="section-{{ forloop.counter }}">
+      <div class="section-card-header">
+        <div class="card-icon"><i class="bi {{ sec.icon }}"></i></div>
+        <h5>{{ sec.title }}</h5>
+      </div>
+      <table class="kv-table">
+        <tbody>
+          {% for row in sec.rows %}
+            {% if row.sub %}
+            <tr class="kv-sub"><td colspan="2">{{ row.val }}</td></tr>
+            {% else %}
+            <tr>
+              <td class="kv-key">{{ row.key }}</td>
+              <td class="kv-val">
+                {% if row.val == "<not specified>" or row.val == "" %}
+                  <span class="empty">not specified</span>
+                {% else %}{{ row.val }}{% endif %}
+              </td>
+            </tr>
+            {% endif %}
+          {% empty %}
+            <tr><td colspan="2" style="padding:1rem 1.4rem;color:var(--muted);">(no data)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

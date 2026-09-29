@@ -1,0 +1,62 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Build DMI Explorer",
+            "command": "gcc",
+            "args": [
+                "-g",
+                "-Wall",
+                "-Wextra",
+                "-std=c11",
+                "${workspaceFolder}/src/main.c",
+                "${workspaceFolder}/src/smbios.c",
+                "${workspaceFolder}/src/display_system.c",
+                "${workspaceFolder}/src/display_memory.c",
+                "${workspaceFolder}/src/util.c",
+                "-o",
+                "${workspaceFolder}/dmi_explorer"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compile all source files into ./dmi_explorer with gcc."
+        },
+        {
+            "type": "shell",
+            "label": "Run DMI Explorer",
+            "command": "${workspaceFolder}/dmi_explorer",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Build DMI Explorer",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Run DMI Explorer (sudo)",
+            "command": "sudo",
+            "args": ["${workspaceFolder}/dmi_explorer"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Build DMI Explorer",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "detail": "Use this if /sys/firmware/dmi/tables/DMI is not world-readable."
+        }
+    ]
+}

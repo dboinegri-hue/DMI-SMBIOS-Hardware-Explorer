@@ -1,0 +1,29 @@
+# Compiled binary
+dmi_explorer
+dmi_explorer.exe
+
+# C build artifacts
+*.o
+*.obj
+*.ilk
+*.pdb
+
+# Python / Django
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+*.sqlite3
+
+# IDE / editor
+.vs/
+.vscode/settings.json
+.idea/
+
+# Build dirs
+build/
+out/
+
+# Claude Code session data
+.claude/
